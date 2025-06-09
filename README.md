@@ -371,9 +371,3 @@ flake8 src/
 1. このREADMEのトラブルシューティング
 2. `docs/api_setup_guide.md`の詳細な設定手順
 3. ログファイル (`logs/search.log`) の内容
-
-## 📚 関連ドキュメント
-
-- [API設定ガイド](docs/api_setup_guide.md)
-- [実装タスクリスト](docs/implementation_task_list.md)
-- [要件定義書](docs/search_api_requirements.md)
