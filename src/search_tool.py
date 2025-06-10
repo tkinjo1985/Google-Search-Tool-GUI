@@ -288,6 +288,8 @@ class SearchTool:
         self.logger.info(f"バッチ検索完了: {len(results)}/{total_keywords}件成功")
         
         return results
+    
+    def search_single_keyword(self, keyword: str) -> Optional[SearchResult]:
         """
         単一キーワードの検索
         

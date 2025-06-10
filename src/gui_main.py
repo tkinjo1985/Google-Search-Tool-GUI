@@ -82,7 +82,7 @@ class SearchWorker(QThread):
                             'title': result.title,
                             'url': result.url,
                             'snippet': result.snippet,
-                            'timestamp': result.search_timestamp.strftime('%Y-%m-%d %H:%M:%S')
+                            'timestamp': result.search_datetime.strftime('%Y-%m-%d %H:%M:%S')
                         }
                         results.append(result_dict)
                         self.result_found.emit(result_dict)

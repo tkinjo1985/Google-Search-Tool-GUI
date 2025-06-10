@@ -136,3 +136,5 @@ config/config.json
 
 docs/
 CLAUDE.md
+
+.github
