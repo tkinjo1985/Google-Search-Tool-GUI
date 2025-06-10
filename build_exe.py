@@ -253,19 +253,8 @@ def create_readme_for_exe():
 
 def copy_required_files():
     """必要なファイルをdistディレクトリにコピー"""
-    files_to_copy = [
-        ('.env.sample', 'dist/.env.sample'),
-        ('keywords_sample.txt', 'dist/keywords_sample.txt'),
-        ('config/config_sample.json', 'dist/config/config_sample.json')
-    ]
-    
-    # distディレクトリのconfig作成
-    os.makedirs('dist/config', exist_ok=True)
-    
-    for src, dst in files_to_copy:
-        if os.path.exists(src):
-            shutil.copy2(src, dst)
-            print(f"📋 {src} を {dst} にコピーしました")
+    # configディレクトリの作成とファイルコピーを無効化
+    print("📋 ファイルのコピーをスキップしています")
 
 def main():
     """メイン処理"""
@@ -298,7 +287,6 @@ def main():
         print(f"📁 出力先: {os.path.abspath('dist')}")
         print("📝 次の手順:")
         print("1. dist フォルダ内の GoogleSearchTool.exe を確認")
-        print("2. .env.sample を .env にコピーしてAPI設定")
         print("3. GoogleSearchTool.exe を起動してテスト")
         print("=" * 60)
     else:
