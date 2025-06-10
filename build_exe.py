@@ -186,33 +186,36 @@ def build_exe():
 
 def create_readme_for_exe():
     """EXE版用のREADMEを作成"""
-    readme_content = '''# Google Search Tool - EXE版
+    readme_content = r'''# Google Search Tool - Free Edition
 
-## 📋 概要
+## 概要
 このフォルダには、Google Custom Search API検索ツールのWindows実行ファイル版が含まれています。
 
-## 🚀 使用方法
+### 使用方法
 
-### 1. 設定ファイルの準備
-初回起動前に、以下のいずれかの方法でAPI設定を行ってください：
+## APIキーと検索エンジンIDの取得
+# Google Custom Search API の設定
+1. Google Cloud Console での設定
 
-#### 方法1: .envファイル（推奨）
-1. `.env.sample` を `.env` にコピー
-2. テキストエディタで開いて、以下を設定：
-   ```
-   GOOGLE_API_KEY=your_google_api_key_here
-   GOOGLE_CUSTOM_SEARCH_ENGINE_ID=your_custom_search_engine_id_here
-   ```
+    1. [Google Cloud Console](https://console.cloud.google.com/) にアクセス
+    2. プロジェクトを作成または選択
+    3. Custom Search JSON API を有効化
+    4. APIキーを作成
 
-#### 方法2: GUI設定画面
+2. カスタム検索エンジンの作成
+
+    1. [Programmable Search Engine](https://programmablesearchengine.google.com/) にアクセス
+    2. 新しい検索エンジンを作成
+    3. 「ウェブ全体を検索」を選択
+    4. 検索エンジンIDを取得
+
+## 初期設定
 1. GoogleSearchTool.exe を起動
 2. 「設定」タブでAPI KeyとSearch Engine IDを入力
 3. 「保存」ボタンで設定を保存
+4. 「API接続テスト」ボタンで接続を確認
 
-### 2. アプリケーションの起動
-`GoogleSearchTool.exe` をダブルクリックして起動してください。
-
-### 3. 基本的な使用手順
+## 基本的な使用手順
 1. **設定確認**: 「設定」タブでAPI設定を確認
 2. **接続テスト**: 「API接続テスト」ボタンで動作確認
 3. **キーワード入力**: 検索したいキーワードを入力
@@ -220,17 +223,17 @@ def create_readme_for_exe():
 5. **結果確認**: 「結果」タブで検索結果を確認
 6. **保存**: 「CSV形式で保存」ボタンで結果をエクスポート
 
-## 📁 ファイル構成
+### ファイル構成
 - `GoogleSearchTool.exe` - メインアプリケーション
-- `config/config_sample.json` - 設定ファイルサンプル
-- `.env.sample` - 環境変数ファイルサンプル
-- `keywords_sample.txt` - キーワードサンプルファイル
-- `README.md` - このファイル
+- `C:\Users\<ユーザ>\AppData\Roaming\GoogleSearchTool\config_sample.json` - 設定ファイル
+- `README.md` - 説明書
 
 ## ⚠️ 注意事項
 - Google Custom Search APIのキーが必要です
-- 1日100クエリまでの制限があります（無料プラン）
+- 無料プランのAPIには1日100クエリまでの制限があります
 - インターネット接続が必要です
+- APIの仕様上、ブラウザでの検索結果とは異なる場合があります
+- 検索結果の内容はGoogleのポリシーに準拠しています
 
 ## 🆘 トラブルシューティング
 
@@ -243,7 +246,7 @@ def create_readme_for_exe():
 - インターネット接続を確認
 
 ### 詳細なサポート
-詳細な設定方法やトラブルシューティングは、元のREADME.mdを参照してください。
+詳細な設定方法やトラブルシューティングは、エンハンスのご要望は以下へご連絡ください
 '''
     
     with open('dist/README.md', 'w', encoding='utf-8') as f:
