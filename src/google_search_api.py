@@ -76,6 +76,8 @@ class GoogleSearchAPI:
             'safe': kwargs.get('safe', 'off'),  # セーフサーチ
             'fileType': kwargs.get('fileType', ''),  # ファイルタイプ
             'siteSearch': kwargs.get('siteSearch', ''),  # サイト制限
+            'gl': kwargs.get('gl', 'jp'),  # 地域制限
+            'hl': kwargs.get('hl', 'ja'),  # 言語
         }
         
         # 空の値を削除

@@ -2,28 +2,12 @@
 # -*- coding: utf-8 -*-
 """
 設定管理モジュール
-環境変数とJSONファイル        # 環境変数から設定を読み込み（テスト時は無効化）
-        if not self.skip_validation:
-            env_mappings = {
-                "GOOGLE_API_KEY": ["google_api", "api_key"],
-                "GOOGLE_CUSTOM_SEARCH_ENGINE_ID": ["google_api", "custom_search_engine_id"],
-                "OUTPUT_DIRECTORY": ["output", "directory"],
-                "OUTPUT_FILENAME_PREFIX": ["output", "filename_prefix"],
-                "LOG_LEVEL": ["logging", "level"],
-                "LOG_FILE_PATH": ["logging", "file_path"],
-                "SEARCH_RETRY_COUNT": ["search", "retry_count"],
-                "SEARCH_RETRY_DELAY": ["search", "retry_delay"],
-                "SEARCH_TIMEOUT": ["search", "timeout"]
-            }
-            
-            for env_var, config_path in env_mappings.items():
-                env_value = os.getenv(env_var)
-                if env_value is not None:
-                    self._set_nested_value(self.config_data, config_path, env_value)証を行う
+環境変数とJSONファイルから設定を読み込み、統合的な設定管理と検証を行う
 """
 
 import json
 import os
+import sys
 from pathlib import Path
 from typing import Dict, Any, Optional
 from dotenv import load_dotenv
@@ -31,6 +15,20 @@ from dotenv import load_dotenv
 
 class ConfigManager:
     """設定管理クラス"""
+    
+    def get_user_config_path(self) -> str:
+        """ユーザー固有の設定ファイルパスを取得する（EXE実行時用）"""
+        # Windows: %APPDATA%/GoogleSearchTool/config.json
+        # その他: ~/.googlesearchtool/config.json
+        
+        if os.name == 'nt':  # Windows
+            appdata = os.getenv('APPDATA', os.path.expanduser('~'))
+            config_dir = os.path.join(appdata, 'GoogleSearchTool')
+        else:
+            config_dir = os.path.expanduser('~/.googlesearchtool')
+        
+        os.makedirs(config_dir, exist_ok=True)
+        return os.path.join(config_dir, 'config.json')
     
     def __init__(self, config_file_path: Optional[str] = None, skip_validation: bool = False):
         """
@@ -41,7 +39,18 @@ class ConfigManager:
             skip_validation: 設定値検証をスキップするかどうか（テスト用）
         """
         self.config_data: Dict[str, Any] = {}
-        self.config_file_path = config_file_path or "config/config.json"
+        
+        # EXE実行時は適切なパスを設定
+        if config_file_path is None:
+            if hasattr(sys, '_MEIPASS'):
+                # PyInstallerで実行されている場合はユーザーディレクトリに保存
+                self.config_file_path = self.get_user_config_path()
+            else:
+                # 通常の実行の場合
+                self.config_file_path = "config/config.json"
+        else:
+            self.config_file_path = config_file_path
+            
         self.skip_validation = skip_validation
         
         # 環境変数を読み込み
@@ -234,6 +243,90 @@ class ConfigManager:
     def get_timeout(self) -> int:
         """タイムアウト時間を取得する"""
         return self.get("search.timeout", 10)
+    
+    def set_google_api_key(self, api_key: str) -> None:
+        """Google API キーを設定する"""
+        self.config_data["google_api"]["api_key"] = api_key
+    
+    def set_search_engine_id(self, search_engine_id: str) -> None:
+        """Custom Search Engine IDを設定する"""
+        self.config_data["google_api"]["custom_search_engine_id"] = search_engine_id
+    
+    def set_output_directory(self, directory: str) -> None:
+        """出力ディレクトリを設定する"""
+        self.config_data["output"]["directory"] = directory
+    
+    def set_output_filename_prefix(self, prefix: str) -> None:
+        """出力ファイル名プレフィックスを設定する"""
+        self.config_data["output"]["filename_prefix"] = prefix
+    
+    def set_log_level(self, level: str) -> None:
+        """ログレベルを設定する"""
+        self.config_data["logging"]["level"] = level
+    
+    def set_retry_count(self, count: int) -> None:
+        """リトライ回数を設定する"""
+        self.config_data["search"]["retry_count"] = count
+    
+    def set_retry_delay(self, delay: float) -> None:
+        """リトライ間隔を設定する"""
+        self.config_data["search"]["retry_delay"] = delay
+    
+    def set_timeout(self, timeout: int) -> None:
+        """タイムアウト時間を設定する"""
+        self.config_data["search"]["timeout"] = timeout
+    
+    def save_config(self, file_path: Optional[str] = None) -> bool:
+        """
+        設定をファイルに保存する
+        
+        Args:
+            file_path: 保存先ファイルパス（指定しない場合は初期化時のパスを使用）
+            
+        Returns:
+            保存成功の場合True、失敗の場合False
+        """
+        save_path = file_path or self.config_file_path
+        
+        try:
+            # ディレクトリが存在しない場合は作成
+            save_dir = os.path.dirname(save_path)
+            if save_dir:  # パスが空でない場合のみディレクトリを作成
+                os.makedirs(save_dir, exist_ok=True)
+            
+            # 設定を保存
+            with open(save_path, 'w', encoding='utf-8') as f:
+                json.dump(self.config_data, f, ensure_ascii=False, indent=2)
+            
+            return True
+            
+        except (IOError, OSError) as e:
+            print(f"設定ファイルの保存に失敗しました: {e}")
+            return False
+    
+    def get_config_file_path(self) -> str:
+        """設定ファイルのパスを取得する"""
+        return self.config_file_path
+    
+    def has_valid_api_credentials(self) -> bool:
+        """有効なAPI認証情報があるかチェックする"""
+        api_key = self.get_google_api_key()
+        engine_id = self.get_search_engine_id()
+        
+        return (api_key and api_key != "YOUR_GOOGLE_API_KEY_HERE" and
+                engine_id and engine_id != "YOUR_CUSTOM_SEARCH_ENGINE_ID_HERE")
+    
+    def get_absolute_config_path(self) -> str:
+        """設定ファイルの絶対パスを取得する（EXE実行時用）"""
+        if hasattr(sys, '_MEIPASS'):
+            # PyInstallerで実行されている場合
+            base_path = os.path.dirname(sys.executable)
+        else:
+            # 通常の実行の場合
+            base_path = os.path.dirname(os.path.abspath(__file__))
+            base_path = os.path.dirname(base_path)  # srcディレクトリの親に移動
+        
+        return os.path.join(base_path, self.config_file_path)
 
 
 def create_sample_config_file(file_path: str = "config/config.json") -> None:
