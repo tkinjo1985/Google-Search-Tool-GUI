@@ -129,6 +129,11 @@ class GoogleSearchGUI(QMainWindow):
         self.setWindowTitle("Google Search Tool - Community Edition")
         self.setGeometry(100, 100, 1200, 800)
         
+        # ウィンドウアイコンを設定
+        icon_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "icon", "app_icon.ico")
+        if os.path.exists(icon_path):
+            self.setWindowIcon(QIcon(icon_path))
+        
         # アプリケーションのスタイルを設定
         self.setStyleSheet("""
             QMainWindow {
@@ -818,6 +823,11 @@ def main():
     app.setApplicationName("Google Search Tool")
     app.setApplicationVersion("1.0.0")
     app.setOrganizationName("Google Search Tool")
+    
+    # アプリケーションアイコンを設定
+    icon_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "icon", "app_icon.ico")
+    if os.path.exists(icon_path):
+        app.setWindowIcon(QIcon(icon_path))
     
     # メインウィンドウ作成・表示
     window = GoogleSearchGUI()
